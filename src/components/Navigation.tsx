@@ -39,7 +39,7 @@ const Navigation = () => {
 
           <div className="flex items-center space-x-4">
             <Link to="/login">
-              <Button variant="ghost" className="flex items-center space-x-2">
+              <Button variant="ghost" className="flex items-center space-x-2 hover:bg-primary/10">
                 <User className="w-4 h-4" />
                 <span>Login</span>
               </Button>
