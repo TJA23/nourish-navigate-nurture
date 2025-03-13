@@ -47,7 +47,7 @@ const HealthAdvice = () => {
         response = "To support liver health, limit alcohol consumption, maintain a healthy weight, eat a balanced diet, avoid unnecessary medications, and get vaccinated against hepatitis A and B if recommended by your healthcare provider.";
       } else if (userQuery.includes("joint") || activeCondition === "joint") {
         response = "For joint health, maintain a healthy weight to reduce stress on joints, engage in low-impact exercises like swimming or cycling, include anti-inflammatory foods in your diet, and consider supplements like glucosamine if recommended by your healthcare provider.";
-      } else if (userQuery.includes("pcos") || activeCondition === "pcos")) {
+      } else if (userQuery.includes("pcos") || activeCondition === "pcos") {
         response = "Managing PCOS often involves maintaining a healthy weight through regular exercise and a balanced diet, possibly taking medications to regulate menstrual cycles and reduce symptoms, and regular monitoring with a healthcare provider.";
       } else {
         response = "I can provide general advice about heart disease, diabetes, kidney issues, liver concerns, joint problems, and PCOS. Could you please specify which health condition you'd like information about?";
