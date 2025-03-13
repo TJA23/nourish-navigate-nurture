@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, User, Calendar, Activity, Heart, Book } from "lucide-react";
+import { Home, User, Calendar, Activity, Heart, Book, UserPlus } from "lucide-react";
 
 const Navigation = () => {
   return (
@@ -38,6 +38,12 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            <Link to="/signup">
+              <Button variant="outline" className="flex items-center space-x-2 hover:bg-primary/10">
+                <UserPlus className="w-4 h-4" />
+                <span>Sign Up</span>
+              </Button>
+            </Link>
             <Link to="/login">
               <Button variant="ghost" className="flex items-center space-x-2 hover:bg-primary/10">
                 <User className="w-4 h-4" />

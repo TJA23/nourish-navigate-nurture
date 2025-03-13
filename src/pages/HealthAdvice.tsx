@@ -1,203 +1,127 @@
-
 import React, { useState } from "react";
-import Navigation from "@/components/Navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Heart, Kidney, ActivitySquare, Star, UserCircle2 } from "lucide-react";
-
-type MessageType = {
-  type: "user" | "ai";
-  text: string;
-};
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Heart, Droplets, Stethoscope, Pill, ActivitySquare, Cherry } from "lucide-react";
 
 const HealthAdvice = () => {
-  const [messages, setMessages] = useState<MessageType[]>([
-    {
-      type: "ai",
-      text: "Hello! I'm your health assistant. I can provide general advice about various health conditions like heart disease, diabetes, kidney issues, liver concerns, joint problems, and PCOS. How can I help you today?"
-    }
-  ]);
-  const [input, setInput] = useState("");
-  const [activeCondition, setActiveCondition] = useState("heart");
+  const [query, setQuery] = useState("");
+  const [advice, setAdvice] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSend = () => {
-    if (input.trim() === "") return;
+  const handleQuerySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-    // Add user message
-    const newMessages: MessageType[] = [
-      ...messages,
-      { type: "user", text: input }
-    ];
-    setMessages(newMessages);
+    try {
+      // Simulate an API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Simulate AI response
-    setTimeout(() => {
-      let response = "";
-      const userQuery = input.toLowerCase();
-
-      if (userQuery.includes("heart") || activeCondition === "heart") {
-        response = "For heart health, it's important to maintain a healthy diet low in saturated fats and sodium, exercise regularly, avoid smoking, limit alcohol consumption, and manage stress effectively. Regular check-ups to monitor blood pressure and cholesterol are also crucial.";
-      } else if (userQuery.includes("diabetes") || activeCondition === "diabetes") {
-        response = "Managing diabetes involves monitoring blood sugar levels, taking prescribed medications, following a balanced diet rich in fiber and low in simple carbohydrates, staying physically active, and maintaining a healthy weight.";
-      } else if (userQuery.includes("kidney") || activeCondition === "kidney") {
-        response = "For kidney health, stay well-hydrated, maintain a healthy blood pressure, limit sodium intake, avoid excessive protein consumption, and be cautious with over-the-counter pain medications that can affect kidney function.";
-      } else if (userQuery.includes("liver") || activeCondition === "liver") {
-        response = "To support liver health, limit alcohol consumption, maintain a healthy weight, eat a balanced diet, avoid unnecessary medications, and get vaccinated against hepatitis A and B if recommended by your healthcare provider.";
-      } else if (userQuery.includes("joint") || activeCondition === "joint") {
-        response = "For joint health, maintain a healthy weight to reduce stress on joints, engage in low-impact exercises like swimming or cycling, include anti-inflammatory foods in your diet, and consider supplements like glucosamine if recommended by your healthcare provider.";
-      } else if (userQuery.includes("pcos") || activeCondition === "pcos") {
-        response = "Managing PCOS often involves maintaining a healthy weight through regular exercise and a balanced diet, possibly taking medications to regulate menstrual cycles and reduce symptoms, and regular monitoring with a healthcare provider.";
+      if (query.toLowerCase().includes("exercise")) {
+        setAdvice("Regular exercise is important for maintaining good health. Aim for at least 30 minutes of moderate exercise most days of the week.");
+      } else if (query.toLowerCase().includes("diet")) {
+        setAdvice("A balanced diet rich in fruits, vegetables, lean proteins, and whole grains is essential for overall well-being.");
+      } else if (query.toLowerCase().includes("sleep")) {
+        setAdvice("Aim for 7-8 hours of quality sleep each night to allow your body to rest and repair.");
       } else {
-        response = "I can provide general advice about heart disease, diabetes, kidney issues, liver concerns, joint problems, and PCOS. Could you please specify which health condition you'd like information about?";
+        setAdvice("This is a demo. Please ask about 'exercise', 'diet', or 'sleep' for relevant advice.");
       }
-
-      setMessages(prev => [...prev, { type: "ai", text: response }]);
-    }, 1000);
-
-    setInput("");
+    } catch (e: any) {
+      setError("Failed to fetch advice. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const healthConditions = [
-    { id: "heart", name: "Heart Disease", icon: <Heart className="h-4 w-4" /> },
-    { id: "diabetes", name: "Diabetes", icon: <ActivitySquare className="h-4 w-4" /> },
-    { id: "kidney", name: "Kidney Issues", icon: <Kidney className="h-4 w-4" /> },
-    { id: "liver", name: "Liver Concerns", icon: <Star className="h-4 w-4" /> },
-    { id: "joint", name: "Joint Problems", icon: <ActivitySquare className="h-4 w-4" /> },
-    { id: "pcos", name: "PCOS", icon: <UserCircle2 className="h-4 w-4" /> }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <div className="container mx-auto py-10 px-4">
-        <h1 className="text-3xl font-bold text-center mb-10">Health Advice Assistant</h1>
-
-        <div className="max-w-4xl mx-auto">
-          <Tabs defaultValue="assistant" className="w-full">
-            <TabsList className="grid grid-cols-2 mb-8">
-              <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
-              <TabsTrigger value="resources">Health Resources</TabsTrigger>
+    <div className="container mx-auto py-24 px-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Heart className="w-5 h-5 text-primary" />
+            <span>Your Health Journey Starts Here</span>
+          </CardTitle>
+          <CardDescription>Personalized advice for a healthier life.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="general" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="general">General Wellness</TabsTrigger>
+              <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
+              <TabsTrigger value="fitness">Fitness</TabsTrigger>
+              <TabsTrigger value="mental">Mental Health</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="assistant" className="space-y-8">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {healthConditions.map((condition) => (
-                  <Button
-                    key={condition.id}
-                    variant={activeCondition === condition.id ? "default" : "outline"}
-                    className="justify-start"
-                    onClick={() => {
-                      setActiveCondition(condition.id);
-                      setMessages(prev => [
-                        ...prev,
-                        { 
-                          type: "ai", 
-                          text: `Let me provide some information about ${condition.name}. What specific aspect would you like to know?` 
-                        }
-                      ]);
-                    }}
-                  >
-                    {condition.icon}
-                    <span className="ml-2">{condition.name}</span>
-                  </Button>
-                ))}
-              </div>
-
-              <Card className="border-gray-200">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-medium">Health Assistant Chat</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto mb-4 p-1">
-                    {messages.map((message, index) => (
-                      <div 
-                        key={index} 
-                        className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-                      >
-                        <div 
-                          className={`max-w-[80%] p-3 rounded-lg ${
-                            message.type === "user" 
-                              ? "bg-primary text-white rounded-tr-none" 
-                              : "bg-gray-100 text-gray-800 rounded-tl-none"
-                          }`}
-                        >
-                          {message.text}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Type your health question..."
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    />
-                    <Button onClick={handleSend}>
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <TabsContent value="general" className="space-y-2">
+              <Alert>
+                <Heart className="h-4 w-4" />
+                <AlertTitle>Tip for Today</AlertTitle>
+                <AlertDescription>
+                  Stay hydrated! Drinking enough water is crucial for energy levels and overall health.
+                </AlertDescription>
+              </Alert>
             </TabsContent>
-
-            <TabsContent value="resources">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Helpful Health Resources</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Heart Disease</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>American Heart Association - <a href="https://www.heart.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.heart.org</a></li>
-                      <li>CDC Heart Disease Information - <a href="https://www.cdc.gov/heartdisease/" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.cdc.gov/heartdisease</a></li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Diabetes</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>American Diabetes Association - <a href="https://www.diabetes.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.diabetes.org</a></li>
-                      <li>National Institute of Diabetes - <a href="https://www.niddk.nih.gov/health-information/diabetes" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.niddk.nih.gov</a></li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Kidney Health</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>National Kidney Foundation - <a href="https://www.kidney.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.kidney.org</a></li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Liver Health</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>American Liver Foundation - <a href="https://liverfoundation.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">liverfoundation.org</a></li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Joint Health</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Arthritis Foundation - <a href="https://www.arthritis.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.arthritis.org</a></li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">PCOS</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>PCOS Awareness Association - <a href="https://www.pcosaa.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.pcosaa.org</a></li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
+            <TabsContent value="nutrition" className="space-y-2">
+              <Alert>
+                <Cherry className="h-4 w-4" />
+                <AlertTitle>Nutrition Advice</AlertTitle>
+                <AlertDescription>
+                  Incorporate a variety of colorful fruits and vegetables into your daily meals for a wide range of vitamins and minerals.
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+            <TabsContent value="fitness" className="space-y-2">
+              <Alert>
+                <ActivitySquare className="h-4 w-4" />
+                <AlertTitle>Fitness Tip</AlertTitle>
+                <AlertDescription>
+                  Find an activity you enjoy, whether it's dancing, hiking, or swimming, to make exercise a fun and sustainable part of your routine.
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+            <TabsContent value="mental" className="space-y-2">
+              <Alert>
+                <Stethoscope className="h-4 w-4" />
+                <AlertTitle>Mental Wellness</AlertTitle>
+                <AlertDescription>
+                  Take a few minutes each day to practice mindfulness or meditation to reduce stress and improve mental clarity.
+                </AlertDescription>
+              </Alert>
             </TabsContent>
           </Tabs>
-        </div>
-      </div>
+
+          <div className="mt-6">
+            <form onSubmit={handleQuerySubmit} className="flex space-x-2">
+              <Input
+                type="text"
+                placeholder="Ask a question about health..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Loading..." : "Get Advice"}
+              </Button>
+            </form>
+
+            {error && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {advice && (
+              <div className="mt-4 p-4 rounded-md bg-gray-50 border border-gray-200">
+                <h4 className="font-semibold">Advice:</h4>
+                <p>{advice}</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
