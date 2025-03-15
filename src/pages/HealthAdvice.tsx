@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Heart, Droplets, Stethoscope, Pill, Activity, Cherry, Dumbbell, ArrowRight, Apple, Brain, Kidney, Clipboard } from "lucide-react";
+import { Heart, Droplets, Stethoscope, Pill, Activity, Cherry, Dumbbell, ArrowRight, Apple, Brain } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
 import HealthRecommendations from "@/components/HealthRecommendations";
@@ -496,7 +496,7 @@ const HealthAdvice = () => {
                         onClick={() => setSelectedHealthTab("kidney")}
                         className="w-full"
                       >
-                        <Kidney className="mr-2 h-4 w-4" />
+                        <Activity className="mr-2 h-4 w-4" />
                         Kidney
                       </Button>
                       <Button 

@@ -1,4 +1,3 @@
-
 export type HealthCondition = 
   | "diabetic" 
   | "thyroid" 
@@ -24,6 +23,7 @@ export interface NutritionInfo {
   omega3?: number;
   iodine?: number;
   phosphorus?: number;
+  selenium?: number;
 }
 
 export interface Ingredient {
