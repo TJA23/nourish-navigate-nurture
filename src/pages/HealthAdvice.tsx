@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Heart, Droplets, Stethoscope, Pill, ActivitySquare, Cherry, Activity, Dumbbell, ArrowRight } from "lucide-react";
+import { Heart, Droplets, Stethoscope, Pill, Activity, Cherry, Dumbbell, ArrowRight, Apple, Brain, Kidney, Clipboard } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
+import HealthRecommendations from "@/components/HealthRecommendations";
+import { HealthCondition } from "@/types/health";
 
 type DietType = "vegetarian" | "non-vegetarian" | "vegan";
 
@@ -32,9 +33,11 @@ const HealthAdvice = () => {
   const [weight, setWeight] = useState<string>("");
   const [gender, setGender] = useState<string>("male");
   const [dietType, setDietType] = useState<DietType>("vegetarian");
+  const [condition, setCondition] = useState<HealthCondition>("general");
   const [showResults, setShowResults] = useState<boolean>(false);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("general");
+  const [selectedHealthTab, setSelectedHealthTab] = useState<HealthCondition>("general");
 
   const handleQuerySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +146,7 @@ const HealthAdvice = () => {
             <TabsTrigger value="general">General Wellness</TabsTrigger>
             <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
             <TabsTrigger value="fitness">Fitness Calculator</TabsTrigger>
-            <TabsTrigger value="mental">Mental Health</TabsTrigger>
+            <TabsTrigger value="health-plans">Health Plans</TabsTrigger>
           </TabsList>
           
           <TabsContent value="general" className="space-y-2">
@@ -430,6 +433,93 @@ const HealthAdvice = () => {
                     Take a few minutes each day to practice mindfulness or meditation to reduce stress and improve mental clarity.
                   </AlertDescription>
                 </Alert>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="health-plans" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Clipboard className="w-5 h-5 text-primary" />
+                  <span>Personalized Health Plans</span>
+                </CardTitle>
+                <CardDescription>Discover meal plans and recommendations for specific health conditions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div>
+                    <Label htmlFor="condition" className="mb-2 block">Select Your Health Condition</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      <Button 
+                        variant={selectedHealthTab === "general" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("general")}
+                        className="w-full"
+                      >
+                        <Activity className="mr-2 h-4 w-4" />
+                        General Fitness
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "diabetic" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("diabetic")}
+                        className="w-full"
+                      >
+                        <Droplets className="mr-2 h-4 w-4" />
+                        Diabetes
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "thyroid" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("thyroid")}
+                        className="w-full"
+                      >
+                        <Stethoscope className="mr-2 h-4 w-4" />
+                        Thyroid
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "heart" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("heart")}
+                        className="w-full"
+                      >
+                        <Heart className="mr-2 h-4 w-4" />
+                        Heart
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "pcos" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("pcos")}
+                        className="w-full"
+                      >
+                        <Brain className="mr-2 h-4 w-4" />
+                        PCOS
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "kidney" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("kidney")}
+                        className="w-full"
+                      >
+                        <Kidney className="mr-2 h-4 w-4" />
+                        Kidney
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "liver" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("liver")}
+                        className="w-full"
+                      >
+                        <Pill className="mr-2 h-4 w-4" />
+                        Liver
+                      </Button>
+                      <Button 
+                        variant={selectedHealthTab === "joint" ? "default" : "outline"} 
+                        onClick={() => setSelectedHealthTab("joint")}
+                        className="w-full"
+                      >
+                        <Activity className="mr-2 h-4 w-4" />
+                        Joint Issues
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <HealthRecommendations condition={selectedHealthTab} />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
