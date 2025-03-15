@@ -22,6 +22,8 @@ export interface NutritionInfo {
   iron?: number;
   vitaminD?: number;
   omega3?: number;
+  iodine?: number;
+  phosphorus?: number;
 }
 
 export interface Ingredient {

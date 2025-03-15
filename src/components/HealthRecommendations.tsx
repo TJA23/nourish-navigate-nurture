@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Apple, Utensils, Coffee, PieChart } from 'lucide-react';
+import { Apple, Utensils, Coffee, PieChart, Heart, Activity } from 'lucide-react';
 
 interface HealthRecommendationsProps {
   condition: HealthCondition;
