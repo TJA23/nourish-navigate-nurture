@@ -4,18 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
-import { Heart, Stethoscope, MessageSquare, Plus, CircleHelp } from "lucide-react";
+import { Heart, Stethoscope, MessageSquare, Plus, CircleHelp, Activity } from "lucide-react";
+import PersonalizedHealthForm from "@/components/health/PersonalizedHealthForm";
+import HealthRecommendations from "@/components/health/HealthRecommendations";
+import { getHealthRecommendations } from "@/data/healthRecommendations";
+import { ConditionFormData, HealthCondition, HealthRecommendation } from "@/types/health";
 
-type HealthCondition = 
-  | "heart disease" 
-  | "diabetes" 
-  | "kidney disease" 
-  | "liver disease" 
-  | "joint issues" 
-  | "pcos" 
-  | "general";
-
-interface AdviceData {
+type AdviceData = {
   title: string;
   description: string;
   tips: string[];
@@ -32,6 +27,8 @@ const HealthAdvice = () => {
   const [messages, setMessages] = useState<{type: "user" | "ai", text: string}[]>([
     { type: "ai", text: "Hello! I'm your health assistant. How can I help you today? You can ask me about managing different health conditions." }
   ]);
+  const [showPersonalizedForm, setShowPersonalizedForm] = useState(false);
+  const [recommendation, setRecommendation] = useState<HealthRecommendation | null>(null);
 
   const handleSendMessage = () => {
     if (!userQuestion.trim()) return;
@@ -99,6 +96,11 @@ const HealthAdvice = () => {
       }
     }
     
+    if (lowerQuestion.includes("personalized") || lowerQuestion.includes("specific") || lowerQuestion.includes("custom") || lowerQuestion.includes("meal plan")) {
+      setShowPersonalizedForm(true);
+      return "I'd be happy to help with personalized recommendations. Please fill out the form that has appeared below to get tailored advice for your condition.";
+    }
+    
     // Default response
     return `I understand you're asking about ${condition}. To give you the best advice, could you provide more specific details about what you'd like to know? You can ask about diet, exercise, symptoms, or management strategies.`;
   };
@@ -159,7 +161,7 @@ const HealthAdvice = () => {
             eat: ["fruits low in potassium", "vegetables low in potassium", "egg whites", "lean proteins in moderation"],
             limit: ["salt", "potassium", "phosphorus", "protein (in later stages)", "processed foods"]
           },
-          icon: <Stethoscope className="h-8 w-8 text-purple-500" />
+          icon: <Activity className="h-8 w-8 text-purple-500" />
         };
       
       case "liver disease":
@@ -234,11 +236,25 @@ const HealthAdvice = () => {
           ],
           foods: {
             eat: ["fruits", "vegetables", "whole grains", "lean proteins", "healthy fats", "nuts", "seeds"],
-            limit: ["processed foods", "added sugars", "excessive salt", "trans fats", "excessive alcohol"]
+            limit: ["processed foods", "added sugars", "trans fats", "excessive sodium", "excessive alcohol"]
           },
           icon: <Heart className="h-8 w-8 text-emerald-500" />
         };
     }
+  };
+
+  const handleFormSubmit = (data: ConditionFormData) => {
+    // Generate recommendations based on form data
+    const generatedRecommendation = getHealthRecommendations(
+      selectedCondition,
+      data.age,
+      data.weight,
+      data.height,
+      data.gender,
+      data.activityLevel
+    );
+    
+    setRecommendation(generatedRecommendation);
   };
 
   const adviceData = getHealthAdvice(selectedCondition);
@@ -279,7 +295,11 @@ const HealthAdvice = () => {
                       key={condition}
                       variant={selectedCondition === condition ? "default" : "outline"}
                       className="justify-start"
-                      onClick={() => setSelectedCondition(condition as HealthCondition)}
+                      onClick={() => {
+                        setSelectedCondition(condition as HealthCondition);
+                        setRecommendation(null);
+                        setShowPersonalizedForm(false);
+                      }}
                     >
                       {condition === "heart disease" && <Heart className="mr-2 h-4 w-4" />}
                       {condition !== "heart disease" && <Stethoscope className="mr-2 h-4 w-4" />}
@@ -287,60 +307,81 @@ const HealthAdvice = () => {
                     </Button>
                   ))}
                 </div>
+                
+                <div className="mt-6">
+                  <Button 
+                    onClick={() => setShowPersonalizedForm(!showPersonalizedForm)}
+                    variant="outline"
+                  >
+                    {showPersonalizedForm ? "Hide Personalized Form" : "Get Personalized Recommendations"}
+                  </Button>
+                </div>
               </div>
               
-              {/* Advice Content */}
-              <Card>
-                <CardHeader className="flex flex-row items-center gap-4">
-                  {adviceData.icon}
-                  <div>
-                    <CardTitle>{adviceData.title}</CardTitle>
-                    <CardDescription className="mt-1.5">{adviceData.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Management Tips</h3>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {adviceData.tips.map((tip, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <Plus className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                          <span>{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Dietary Recommendations</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="bg-green-50 p-4 rounded-md">
-                        <h4 className="font-medium text-green-700 mb-2">Foods to Include</h4>
-                        <ul className="space-y-1">
-                          {adviceData.foods.eat.map((food, index) => (
-                            <li key={index} className="text-green-600">• {food}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="bg-red-50 p-4 rounded-md">
-                        <h4 className="font-medium text-red-700 mb-2">Foods to Limit</h4>
-                        <ul className="space-y-1">
-                          {adviceData.foods.limit.map((food, index) => (
-                            <li key={index} className="text-red-600">• {food}</li>
-                          ))}
-                        </ul>
+              {showPersonalizedForm && (
+                <PersonalizedHealthForm 
+                  condition={selectedCondition} 
+                  onSubmit={handleFormSubmit}
+                />
+              )}
+              
+              {recommendation && (
+                <HealthRecommendations recommendation={recommendation} />
+              )}
+              
+              {!showPersonalizedForm && !recommendation && (
+                <Card>
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    {adviceData.icon}
+                    <div>
+                      <CardTitle>{adviceData.title}</CardTitle>
+                      <CardDescription className="mt-1.5">{adviceData.description}</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Management Tips</h3>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {adviceData.tips.map((tip, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <Plus className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <span>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Dietary Recommendations</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="bg-green-50 p-4 rounded-md">
+                          <h4 className="font-medium text-green-700 mb-2">Foods to Include</h4>
+                          <ul className="space-y-1">
+                            {adviceData.foods.eat.map((food, index) => (
+                              <li key={index} className="text-green-600">• {food}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="bg-red-50 p-4 rounded-md">
+                          <h4 className="font-medium text-red-700 mb-2">Foods to Limit</h4>
+                          <ul className="space-y-1">
+                            {adviceData.foods.limit.map((food, index) => (
+                              <li key={index} className="text-red-600">• {food}</li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="bg-blue-50 p-4 rounded-md">
-                    <p className="text-blue-700 flex items-center gap-2">
-                      <CircleHelp className="w-5 h-5" />
-                      <span>Always consult with your healthcare provider before making significant changes to your diet or exercise routine.</span>
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                    
+                    <div className="bg-blue-50 p-4 rounded-md">
+                      <p className="text-blue-700 flex items-center gap-2">
+                        <CircleHelp className="w-5 h-5" />
+                        <span>Always consult with your healthcare provider before making significant changes to your diet or exercise routine.</span>
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
             
             {/* AI Assistant */}
@@ -352,7 +393,7 @@ const HealthAdvice = () => {
                     Health Assistant
                   </CardTitle>
                   <CardDescription>
-                    Ask questions about managing your health condition
+                    Ask questions about managing your health condition or type "personalized meal plan" to get tailored recommendations
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow flex flex-col">
