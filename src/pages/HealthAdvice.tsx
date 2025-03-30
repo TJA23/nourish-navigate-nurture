@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +23,7 @@ type AdviceData = {
 const HealthAdvice = () => {
   const [selectedCondition, setSelectedCondition] = useState<HealthCondition>("general");
   const [userQuestion, setUserQuestion] = useState("");
-  const [messages, setMessages] = useState<{type: "user" | "ai", text: string}[]>([
+  const [messages, setMessages] = useState<{type: "user" | "ai"; text: string}[]>([
     { type: "ai", text: "Hello! I'm your health assistant. How can I help you today? You can ask me about managing different health conditions." }
   ]);
   const [showPersonalizedForm, setShowPersonalizedForm] = useState(false);
@@ -35,7 +34,7 @@ const HealthAdvice = () => {
     
     const newMessages = [
       ...messages,
-      { type: "user", text: userQuestion }
+      { type: "user" as const, text: userQuestion }
     ];
     
     setMessages(newMessages);
@@ -43,7 +42,7 @@ const HealthAdvice = () => {
     // Simulate AI response based on user question
     setTimeout(() => {
       const aiResponse = getAIResponse(userQuestion, selectedCondition);
-      setMessages([...newMessages, { type: "ai", text: aiResponse }]);
+      setMessages([...newMessages, { type: "ai" as const, text: aiResponse }]);
     }, 1000);
     
     setUserQuestion("");
@@ -244,7 +243,6 @@ const HealthAdvice = () => {
   };
 
   const handleFormSubmit = (data: ConditionFormData) => {
-    // Generate recommendations based on form data
     const generatedRecommendation = getHealthRecommendations(
       selectedCondition,
       data.age,
@@ -263,7 +261,6 @@ const HealthAdvice = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Hero Section */}
       <section className="pt-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50 z-10"></div>
         <div className="h-96 w-full overflow-hidden relative">
@@ -285,7 +282,6 @@ const HealthAdvice = () => {
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Condition selection and info */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-md mb-8 p-6">
                 <h2 className="text-2xl font-bold mb-4">Select a Health Condition</h2>
@@ -384,7 +380,6 @@ const HealthAdvice = () => {
               )}
             </div>
             
-            {/* AI Assistant */}
             <div className="lg:col-span-1">
               <Card className="h-full flex flex-col">
                 <CardHeader>

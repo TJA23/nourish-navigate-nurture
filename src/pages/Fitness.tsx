@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +41,7 @@ const Fitness = () => {
 
   const getExerciseRecommendations = ({ age, height, weight, gender, dietType }: FitnessCalculatorProps) => {
     const ageNum = parseInt(age as string);
-    const bmi = weight / ((height / 100) * (height / 100));
+    const bmi = (weight / ((height / 100) * (height / 100))).toFixed(1);
     
     let intensity = "moderate";
     if (bmi < 18.5) intensity = "light";
@@ -88,7 +87,7 @@ const Fitness = () => {
       exercises: exercisesByIntensity[intensity],
       dietRecommendation: `Focus on whole foods with adequate ${proteinSourcesByDiet[dietType]} for protein.`,
       ageModifier,
-      bmi: bmi.toFixed(1)
+      bmi
     };
   };
 
