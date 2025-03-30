@@ -1,317 +1,289 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
-import { Activity, Dumbbell, Heart, ArrowRight } from "lucide-react";
-import { toast } from "sonner";
-
-type DietType = "vegetarian" | "non-vegetarian" | "vegan";
-
-interface FitnessCalculatorProps {
-  age: number;
-  height: number;
-  weight: number;
-  gender: string;
-  dietType: DietType;
-}
 
 const Fitness = () => {
-  const [age, setAge] = useState<string>("");
-  const [height, setHeight] = useState<string>("");
-  const [weight, setWeight] = useState<string>("");
-  const [gender, setGender] = useState<string>("male");
-  const [dietType, setDietType] = useState<DietType>("vegetarian");
-  const [showResults, setShowResults] = useState<boolean>(false);
-  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("male");
+  const [activityLevel, setActivityLevel] = useState("moderate");
+  const [bmi, setBmi] = useState<number | null>(null);
+  const [bmr, setBmr] = useState<number | null>(null);
+  const [tdee, setTdee] = useState<number | null>(null);
+
+  const calculateBMI = () => {
+    const heightInMeters = parseFloat(height) / 100;
+    const weightInKg = parseFloat(weight);
+    
+    if (heightInMeters > 0 && weightInKg > 0) {
+      const calculatedBMI = weightInKg / (heightInMeters * heightInMeters);
+      setBmi(parseFloat(calculatedBMI.toFixed(1)));
+    }
+  };
+
+  const calculateBMR = () => {
+    const weightInKg = parseFloat(weight);
+    const heightInCm = parseFloat(height);
+    const ageValue = parseFloat(age);
+    
+    if (weightInKg > 0 && heightInCm > 0 && ageValue > 0) {
+      let calculatedBMR = 0;
+      
+      if (gender === "male") {
+        calculatedBMR = 88.362 + (13.397 * weightInKg) + (4.799 * heightInCm) - (5.677 * ageValue);
+      } else {
+        calculatedBMR = 447.593 + (9.247 * weightInKg) + (3.098 * heightInCm) - (4.330 * ageValue);
+      }
+      
+      setBmr(Math.round(calculatedBMR));
+      
+      // Calculate TDEE
+      let activityMultiplier = 1.2; // Sedentary
+      
+      switch(activityLevel) {
+        case "sedentary":
+          activityMultiplier = 1.2;
+          break;
+        case "light":
+          activityMultiplier = 1.375;
+          break;
+        case "moderate":
+          activityMultiplier = 1.55;
+          break;
+        case "active":
+          activityMultiplier = 1.725;
+          break;
+        case "very active":
+          activityMultiplier = 1.9;
+          break;
+      }
+      
+      setTdee(Math.round(calculatedBMR * activityMultiplier));
+    }
+  };
+
+  const getBMICategory = (bmiValue: number): string => {
+    if (bmiValue < 18.5) return "Underweight";
+    if (bmiValue < 24.9) return "Normal weight";
+    if (bmiValue < 29.9) return "Overweight";
+    if (bmiValue < 34.9) return "Obesity (Class 1)";
+    if (bmiValue < 39.9) return "Obesity (Class 2)";
+    return "Extreme Obesity (Class 3)";
+  };
+
+  const getBMIColor = (bmiValue: number): string => {
+    if (bmiValue < 18.5) return "text-blue-500";
+    if (bmiValue < 24.9) return "text-green-500";
+    if (bmiValue < 29.9) return "text-yellow-500";
+    if (bmiValue < 34.9) return "text-orange-500";
+    if (bmiValue < 39.9) return "text-red-500";
+    return "text-red-700";
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!age || !height || !weight) {
-      toast.error("Please fill all the required fields");
-      return;
-    }
-    
-    setFormSubmitted(true);
-    setShowResults(true);
-    toast.success("Your fitness profile has been created!");
-  };
-
-  const getExerciseRecommendations = ({ age, height, weight, gender, dietType }: FitnessCalculatorProps) => {
-    const ageNum = parseInt(age as string);
-    const bmi = (weight / ((height / 100) * (height / 100))).toFixed(1);
-    
-    let intensity = "moderate";
-    if (bmi < 18.5) intensity = "light";
-    if (bmi > 25) intensity = "high";
-    
-    const exercisesByIntensity = {
-      light: [
-        { name: "Walking", duration: "30-45 minutes", frequency: "5-7 days/week" },
-        { name: "Swimming", duration: "30 minutes", frequency: "3 days/week" },
-        { name: "Yoga", duration: "30 minutes", frequency: "3-4 days/week" },
-        { name: "Light Stretching", duration: "15 minutes", frequency: "Daily" },
-      ],
-      moderate: [
-        { name: "Jogging", duration: "30 minutes", frequency: "3-5 days/week" },
-        { name: "Cycling", duration: "30-45 minutes", frequency: "3-4 days/week" },
-        { name: "Strength Training", duration: "45 minutes", frequency: "2-3 days/week" },
-        { name: "HIIT", duration: "20 minutes", frequency: "2 days/week" },
-      ],
-      high: [
-        { name: "Running", duration: "30-45 minutes", frequency: "3-4 days/week" },
-        { name: "Weight Training", duration: "45-60 minutes", frequency: "3-4 days/week" },
-        { name: "HIIT", duration: "30 minutes", frequency: "3 days/week" },
-        { name: "Circuit Training", duration: "45 minutes", frequency: "2-3 days/week" },
-      ]
-    };
-    
-    // Diet-specific recommendations
-    const proteinSourcesByDiet = {
-      vegetarian: "dairy products, legumes, tofu, tempeh, and nuts",
-      "non-vegetarian": "lean meats, fish, eggs, dairy, and plant proteins",
-      vegan: "legumes, tofu, tempeh, seitan, and plant-based protein powders"
-    };
-    
-    // Age-specific modifications
-    let ageModifier = "";
-    if (ageNum < 18) {
-      ageModifier = "Focus on building good habits and enjoying physical activity.";
-    } else if (ageNum > 50) {
-      ageModifier = "Include more joint-friendly exercises and focus on maintaining mobility.";
-    }
-    
-    return {
-      exercises: exercisesByIntensity[intensity],
-      dietRecommendation: `Focus on whole foods with adequate ${proteinSourcesByDiet[dietType]} for protein.`,
-      ageModifier,
-      bmi
-    };
+    calculateBMI();
+    calculateBMR();
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="pt-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50 z-10"></div>
-        <div className="h-96 w-full overflow-hidden relative">
-          <img 
-            src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438" 
-            alt="Fitness tracking" 
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-black/20 z-0"></div>
-          <div className="absolute bottom-0 left-0 right-0 text-center p-8 z-20">
-            <h1 className="text-4xl font-bold text-white drop-shadow-lg">Fitness Tracking</h1>
-            <p className="text-xl text-white/90 mt-2 drop-shadow-md max-w-2xl mx-auto">
-              Calculate your fitness profile and get personalized exercise recommendations
-            </p>
-          </div>
-        </div>
-      </section>
-      
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  Fitness Calculator
-                </CardTitle>
-                <CardDescription>
-                  Enter your details to get personalized exercise recommendations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="age">Age (years)</Label>
-                    <Input 
-                      id="age" 
-                      type="number" 
-                      placeholder="Enter your age" 
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                    />
+      <div className="container mx-auto px-4 pt-24 pb-16">
+        <h1 className="text-3xl font-bold mb-6">Fitness Calculator</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Body Metrics Calculator</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="height">Height (cm)</Label>
+                  <Input
+                    id="height"
+                    placeholder="Enter your height"
+                    value={height}
+                    onChange={(e) => setHeight(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="weight">Weight (kg)</Label>
+                  <Input
+                    id="weight"
+                    placeholder="Enter your weight"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="age">Age</Label>
+                  <Input
+                    id="age"
+                    placeholder="Enter your age"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Gender</Label>
+                  <div className="flex space-x-4">
+                    <Button
+                      type="button"
+                      variant={gender === "male" ? "default" : "outline"}
+                      onClick={() => setGender("male")}
+                    >
+                      Male
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={gender === "female" ? "default" : "outline"}
+                      onClick={() => setGender("female")}
+                    >
+                      Female
+                    </Button>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="height">Height (cm)</Label>
-                    <Input 
-                      id="height" 
-                      type="number" 
-                      placeholder="Enter your height" 
-                      value={height}
-                      onChange={(e) => setHeight(e.target.value)}
-                    />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Activity Level</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant={activityLevel === "sedentary" ? "default" : "outline"}
+                      onClick={() => setActivityLevel("sedentary")}
+                      className="justify-start"
+                    >
+                      Sedentary
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={activityLevel === "light" ? "default" : "outline"}
+                      onClick={() => setActivityLevel("light")}
+                      className="justify-start"
+                    >
+                      Light Activity
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={activityLevel === "moderate" ? "default" : "outline"}
+                      onClick={() => setActivityLevel("moderate")}
+                      className="justify-start"
+                    >
+                      Moderate
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={activityLevel === "active" ? "default" : "outline"}
+                      onClick={() => setActivityLevel("active")}
+                      className="justify-start"
+                    >
+                      Very Active
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={activityLevel === "very active" ? "default" : "outline"}
+                      onClick={() => setActivityLevel("very active")}
+                      className="justify-start sm:col-span-2"
+                    >
+                      Extremely Active
+                    </Button>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="weight">Weight (kg)</Label>
-                    <Input 
-                      id="weight" 
-                      type="number" 
-                      placeholder="Enter your weight" 
-                      value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Gender</Label>
-                    <div className="flex space-x-4">
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="male"
-                          name="gender"
-                          value="male"
-                          checked={gender === "male"}
-                          onChange={() => setGender("male")}
-                          className="mr-2"
-                        />
-                        <Label htmlFor="male">Male</Label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="female"
-                          name="gender"
-                          value="female"
-                          checked={gender === "female"}
-                          onChange={() => setGender("female")}
-                          className="mr-2"
-                        />
-                        <Label htmlFor="female">Female</Label>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Diet Type</Label>
-                    <div className="flex flex-col space-y-2">
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="vegetarian"
-                          name="dietType"
-                          value="vegetarian"
-                          checked={dietType === "vegetarian"}
-                          onChange={() => setDietType("vegetarian")}
-                          className="mr-2"
-                        />
-                        <Label htmlFor="vegetarian">Vegetarian</Label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="non-vegetarian"
-                          name="dietType"
-                          value="non-vegetarian"
-                          checked={dietType === "non-vegetarian"}
-                          onChange={() => setDietType("non-vegetarian")}
-                          className="mr-2"
-                        />
-                        <Label htmlFor="non-vegetarian">Non-Vegetarian</Label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="vegan"
-                          name="dietType"
-                          value="vegan"
-                          checked={dietType === "vegan"}
-                          onChange={() => setDietType("vegan")}
-                          className="mr-2"
-                        />
-                        <Label htmlFor="vegan">Vegan</Label>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Button type="submit" className="w-full">Calculate and Get Recommendations</Button>
-                </form>
-              </CardContent>
-            </Card>
-            
-            {showResults && formSubmitted && (
-              <Card className="shadow-md">
+                </div>
+                
+                <Button type="submit" className="w-full">Calculate</Button>
+              </form>
+            </CardContent>
+          </Card>
+          
+          <div className="space-y-6">
+            {bmi !== null && (
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Dumbbell className="h-5 w-5 text-primary" />
-                    Your Personalized Plan
-                  </CardTitle>
-                  <CardDescription>
-                    Based on your fitness profile
-                  </CardDescription>
+                  <CardTitle>Body Mass Index (BMI)</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {(() => {
-                    const recommendations = getExerciseRecommendations({
-                      age: parseInt(age),
-                      height: parseInt(height),
-                      weight: parseInt(weight),
-                      gender,
-                      dietType
-                    });
+                <CardContent>
+                  <div className="text-center">
+                    <p className="text-4xl font-bold mb-2">{bmi}</p>
+                    <p className={`text-xl ${getBMIColor(bmi)}`}>
+                      {getBMICategory(bmi)}
+                    </p>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <p className="text-sm text-gray-600 mb-4">
+                      BMI is a measure of body fat based on height and weight. It's a screening tool that can indicate whether you have a healthy weight for your height.
+                    </p>
                     
-                    return (
-                      <>
-                        <div>
-                          <h3 className="font-semibold text-lg">Your BMI: {recommendations.bmi}</h3>
-                          <p className="text-gray-600 text-sm mt-1">
-                            {parseInt(recommendations.bmi) < 18.5 
-                              ? "Underweight - Focus on healthy weight gain"
-                              : parseInt(recommendations.bmi) < 25
-                                ? "Normal weight - Focus on maintenance"
-                                : "Overweight - Focus on gradual weight loss"}
-                          </p>
-                        </div>
-                        
-                        <div>
-                          <h3 className="font-semibold">Recommended Exercises</h3>
-                          <div className="mt-2 space-y-2">
-                            {recommendations.exercises.map((exercise, index) => (
-                              <div key={index} className="border-b pb-2 last:border-0">
-                                <p className="font-medium">{exercise.name}</p>
-                                <p className="text-sm text-gray-600">
-                                  {exercise.duration} | {exercise.frequency}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h3 className="font-semibold">Nutrition Recommendation</h3>
-                          <p className="text-gray-600 mt-1">{recommendations.dietRecommendation}</p>
-                        </div>
-                        
-                        {recommendations.ageModifier && (
-                          <div>
-                            <h3 className="font-semibold">Age-Specific Advice</h3>
-                            <p className="text-gray-600 mt-1">{recommendations.ageModifier}</p>
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
+                    <div className="bg-gray-100 p-3 rounded-md">
+                      <p className="text-xs text-gray-500">
+                        BMI Categories:
+                      </p>
+                      <ul className="text-xs text-gray-600 mt-1 space-y-1">
+                        <li><span className="text-blue-500 font-medium">Underweight:</span> Below 18.5</li>
+                        <li><span className="text-green-500 font-medium">Normal weight:</span> 18.5–24.9</li>
+                        <li><span className="text-yellow-500 font-medium">Overweight:</span> 25–29.9</li>
+                        <li><span className="text-orange-500 font-medium">Obesity (Class 1):</span> 30-34.9</li>
+                        <li><span className="text-red-500 font-medium">Obesity (Class 2):</span> 35-39.9</li>
+                        <li><span className="text-red-700 font-medium">Extreme Obesity (Class 3):</span> 40 or higher</li>
+                      </ul>
+                    </div>
+                  </div>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="outline" onClick={() => setShowResults(false)} className="w-full">
-                    Edit Profile
-                  </Button>
-                </CardFooter>
+              </Card>
+            )}
+            
+            {bmr !== null && tdee !== null && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Metabolic Rates</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-gray-600 mb-1">Basal Metabolic Rate (BMR)</p>
+                      <p className="text-2xl font-semibold">{bmr} calories/day</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Calories your body needs at complete rest
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-gray-600 mb-1">Total Daily Energy Expenditure (TDEE)</p>
+                      <p className="text-2xl font-semibold">{tdee} calories/day</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Estimated calories you burn per day with your activity level
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-100 p-3 rounded-md">
+                      <p className="text-sm font-medium">Weight goals:</p>
+                      <div className="mt-2 space-y-2 text-sm">
+                        <p><span className="font-medium">Weight loss:</span> Consume {Math.round(tdee * 0.8)} calories/day (20% deficit)</p>
+                        <p><span className="font-medium">Maintenance:</span> Consume {tdee} calories/day</p>
+                        <p><span className="font-medium">Weight gain:</span> Consume {Math.round(tdee * 1.15)} calories/day (15% surplus)</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
             )}
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
