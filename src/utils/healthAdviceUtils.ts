@@ -32,7 +32,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["fruits", "vegetables", "whole grains", "lean proteins", "fatty fish", "nuts", "legumes"],
           limit: ["salt", "saturated fats", "trans fats", "processed foods", "red meat", "sugar"]
         },
-        icon: <Heart className="h-8 w-8 text-red-500" />
+        icon: React.createElement(Heart, { className: "h-8 w-8 text-red-500" })
       };
     
     case "diabetes":
@@ -51,7 +51,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["non-starchy vegetables", "fruits in moderation", "whole grains", "lean proteins", "healthy fats"],
           limit: ["refined carbohydrates", "sugary foods", "processed foods", "sugary drinks", "alcohol"]
         },
-        icon: <Stethoscope className="h-8 w-8 text-blue-500" />
+        icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-blue-500" })
       };
     
     case "kidney disease":
@@ -70,7 +70,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["fruits low in potassium", "vegetables low in potassium", "egg whites", "lean proteins in moderation"],
           limit: ["salt", "potassium", "phosphorus", "protein (in later stages)", "processed foods"]
         },
-        icon: <Activity className="h-8 w-8 text-purple-500" />
+        icon: React.createElement(Activity, { className: "h-8 w-8 text-purple-500" })
       };
     
     case "liver disease":
@@ -89,7 +89,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["fruits", "vegetables", "whole grains", "lean proteins", "healthy fats"],
           limit: ["alcohol", "fatty foods", "added sugars", "salt", "red meat"]
         },
-        icon: <Stethoscope className="h-8 w-8 text-green-500" />
+        icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-green-500" })
       };
     
     case "joint issues":
@@ -108,7 +108,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["fatty fish", "nuts", "seeds", "olive oil", "fruits", "vegetables", "whole grains"],
           limit: ["processed foods", "red meat", "sugar", "salt", "alcohol"]
         },
-        icon: <Stethoscope className="h-8 w-8 text-orange-500" />
+        icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-orange-500" })
       };
     
     case "pcos":
@@ -127,7 +127,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["high-fiber foods", "lean proteins", "anti-inflammatory foods", "fruits", "vegetables", "healthy fats"],
           limit: ["refined carbohydrates", "sugary foods", "processed foods", "inflammatory foods"]
         },
-        icon: <Stethoscope className="h-8 w-8 text-pink-500" />
+        icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-pink-500" })
       };
     
     default:
@@ -147,7 +147,7 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           eat: ["fruits", "vegetables", "whole grains", "lean proteins", "healthy fats", "nuts", "seeds"],
           limit: ["processed foods", "added sugars", "trans fats", "excessive sodium", "excessive alcohol"]
         },
-        icon: <Heart className="h-8 w-8 text-emerald-500" />
+        icon: React.createElement(Heart, { className: "h-8 w-8 text-emerald-500" })
       };
   }
 };
