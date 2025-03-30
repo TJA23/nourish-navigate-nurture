@@ -25,16 +25,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { HealthCondition, ConditionFormData } from "@/types/health";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
 
 const formSchema = z.object({
   age: z.number().min(18).max(120),
-  weight: z.number().min(30).max(300),
-  height: z.number().min(100).max(250),
   gender: z.enum(["male", "female", "other"]),
-  activityLevel: z.enum(["sedentary", "light", "moderate", "active", "very active"]),
-  allergies: z.array(z.string()),
   additionalNotes: z.string().optional(),
   
   // PCOS specific
@@ -76,62 +70,31 @@ const PersonalizedHealthForm: React.FC<PersonalizedHealthFormProps> = ({
   condition,
   onSubmit,
 }) => {
-  const [allergyInput, setAllergyInput] = useState("");
-  const [allergies, setAllergies] = useState<string[]>([]);
   const [calculatedBMI, setCalculatedBMI] = useState<number | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       age: 0,
-      weight: 0,
-      height: 0,
       gender: "male",
-      activityLevel: "moderate",
-      allergies: [],
       additionalNotes: "",
     },
   });
 
-  // Calculate BMI when height and weight change
-  useEffect(() => {
-    const weight = form.watch("weight");
-    const height = form.watch("height");
-    
-    if (weight > 0 && height > 0) {
-      const bmi = weight / ((height / 100) * (height / 100));
-      setCalculatedBMI(parseFloat(bmi.toFixed(1)));
-      
-      if (condition === "pcos") {
-        form.setValue("bmi", parseFloat(bmi.toFixed(1)));
-      }
-    }
-  }, [form.watch("weight"), form.watch("height"), condition]);
-
-  const handleAddAllergy = () => {
-    if (allergyInput.trim() !== "" && !allergies.includes(allergyInput.trim())) {
-      const newAllergies = [...allergies, allergyInput.trim()];
-      setAllergies(newAllergies);
-      form.setValue("allergies", newAllergies);
-      setAllergyInput("");
-    }
-  };
-
-  const handleRemoveAllergy = (allergy: string) => {
-    const newAllergies = allergies.filter((a) => a !== allergy);
-    setAllergies(newAllergies);
-    form.setValue("allergies", newAllergies);
-  };
-
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
+    // Default values for the removed fields
+    const defaultHeight = 170; // cm
+    const defaultWeight = 70; // kg
+    const defaultActivityLevel = "moderate";
+
     onSubmit({
       ...values,
-      allergies,
+      allergies: [],
       age: values.age,
-      weight: values.weight,
-      height: values.height,
+      weight: defaultWeight,
+      height: defaultHeight,
       gender: values.gender,
-      activityLevel: values.activityLevel,
+      activityLevel: defaultActivityLevel as "sedentary" | "light" | "moderate" | "active" | "very active",
       additionalNotes: values.additionalNotes || "",
     });
   };
@@ -142,11 +105,13 @@ const PersonalizedHealthForm: React.FC<PersonalizedHealthFormProps> = ({
         <FormItem>
           <FormLabel>BMI (kg/m²)</FormLabel>
           <FormControl>
-            <Input value={calculatedBMI || ""} disabled />
+            <Input 
+              type="number"
+              step="0.1"
+              placeholder="Enter BMI" 
+              onChange={(e) => form.setValue("bmi", parseFloat(e.target.value) || 0)}
+            />
           </FormControl>
-          <FormDescription>
-            BMI is automatically calculated based on your height and weight
-          </FormDescription>
         </FormItem>
         
         <FormItem>
@@ -508,118 +473,6 @@ const PersonalizedHealthForm: React.FC<PersonalizedHealthFormProps> = ({
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Weight (kg)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Enter your weight"
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value) || 0)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="height"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Height (cm)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Enter your height"
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value) || 0)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="activityLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Activity Level</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select activity level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sedentary">
-                          Sedentary (little to no exercise)
-                        </SelectItem>
-                        <SelectItem value="light">
-                          Light (light exercise 1-3 days/week)
-                        </SelectItem>
-                        <SelectItem value="moderate">
-                          Moderate (moderate exercise 3-5 days/week)
-                        </SelectItem>
-                        <SelectItem value="active">
-                          Active (hard exercise 6-7 days/week)
-                        </SelectItem>
-                        <SelectItem value="very active">
-                          Very Active (very hard exercise & physical job)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="md:col-span-2">
-                <FormItem>
-                  <FormLabel>Allergies</FormLabel>
-                  <div className="flex space-x-2">
-                    <Input
-                      value={allergyInput}
-                      onChange={(e) => setAllergyInput(e.target.value)}
-                      placeholder="Enter food allergies"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddAllergy();
-                        }
-                      }}
-                    />
-                    <Button type="button" onClick={handleAddAllergy}>
-                      Add
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {allergies.map((allergy) => (
-                      <Badge key={allergy} variant="secondary">
-                        {allergy}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveAllergy(allergy)}
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                </FormItem>
-              </div>
 
               <div className="md:col-span-2">{conditionSpecificFields()}</div>
             </div>

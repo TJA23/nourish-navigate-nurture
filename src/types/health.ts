@@ -1,4 +1,3 @@
-
 export type HealthCondition = 
   | "heart disease" 
   | "diabetes" 
