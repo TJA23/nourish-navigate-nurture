@@ -7,6 +7,7 @@ import KidneyDiseaseForm from "./forms/KidneyDiseaseForm";
 import LiverDiseaseForm from "./forms/LiverDiseaseForm";
 import PCOSForm from "./forms/PCOSForm";
 import BaseHealthForm from "./forms/BaseHealthForm";
+import { baseFormSchema } from "./forms/BaseHealthForm";
 
 interface PersonalizedHealthFormProps {
   condition: HealthCondition;
@@ -32,7 +33,9 @@ const PersonalizedHealthForm: React.FC<PersonalizedHealthFormProps> = ({
       case "vegan":
         return (
           <BaseHealthForm 
+            condition="vegan"
             onSubmit={onSubmit} 
+            schema={baseFormSchema}
             title="Vegan Diet Plan" 
             description="Get personalized vegan meal plans based on your health profile"
           />
@@ -40,7 +43,9 @@ const PersonalizedHealthForm: React.FC<PersonalizedHealthFormProps> = ({
       case "non-vegetarian":
         return (
           <BaseHealthForm 
+            condition="non-vegetarian"
             onSubmit={onSubmit} 
+            schema={baseFormSchema}
             title="Non-Vegetarian Diet Plan" 
             description="Get personalized non-vegetarian meal plans based on your health profile"
           />

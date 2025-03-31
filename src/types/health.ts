@@ -54,6 +54,7 @@ export interface ConditionFormData {
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very active";
   allergies: string[];
   additionalNotes: string;
+  dietPreference?: "vegetarian" | "non-vegetarian" | "vegan";
   
   // Condition-specific parameters
   // PCOS specific

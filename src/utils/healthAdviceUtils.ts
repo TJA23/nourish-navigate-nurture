@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Heart, Stethoscope, Activity } from "lucide-react";
+import { Heart, Stethoscope, Activity, Salad, UtensilsCrossed } from "lucide-react";
 import { HealthCondition } from "@/types/health";
 
 export type AdviceData = {
@@ -92,25 +92,6 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
         icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-green-500" })
       };
     
-    case "joint issues":
-      return {
-        title: "Joint Issues Management",
-        description: "Joint issues include various conditions that cause pain, inflammation, and stiffness in the joints, such as arthritis, bursitis, and tendinitis.",
-        tips: [
-          "Maintain a healthy weight",
-          "Exercise regularly with low-impact activities",
-          "Use hot and cold therapy for pain",
-          "Consider physical therapy",
-          "Use assistive devices if necessary",
-          "Take medications as prescribed"
-        ],
-        foods: {
-          eat: ["fatty fish", "nuts", "seeds", "olive oil", "fruits", "vegetables", "whole grains"],
-          limit: ["processed foods", "red meat", "sugar", "salt", "alcohol"]
-        },
-        icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-orange-500" })
-      };
-    
     case "pcos":
       return {
         title: "PCOS Management",
@@ -128,6 +109,44 @@ export const getHealthAdvice = (condition: HealthCondition): AdviceData => {
           limit: ["refined carbohydrates", "sugary foods", "processed foods", "inflammatory foods"]
         },
         icon: React.createElement(Stethoscope, { className: "h-8 w-8 text-pink-500" })
+      };
+      
+    case "vegan":
+      return {
+        title: "Vegan Diet Plan",
+        description: "A plant-based diet that excludes all animal products including meat, dairy, eggs, and honey.",
+        tips: [
+          "Ensure adequate vitamin B12 intake through supplements or fortified foods",
+          "Include protein-rich plant foods like legumes, tofu, and tempeh",
+          "Diversify your diet to get all essential nutrients",
+          "Monitor iron and calcium intake",
+          "Consider omega-3 supplements from algae sources",
+          "Stay hydrated"
+        ],
+        foods: {
+          eat: ["legumes", "whole grains", "nuts and seeds", "fruits", "vegetables", "plant-based milk", "nutritional yeast"],
+          limit: ["processed vegan foods", "excessive sugar", "high-sodium foods", "refined carbohydrates"]
+        },
+        icon: React.createElement(Salad, { className: "h-8 w-8 text-green-500" })
+      };
+      
+    case "non-vegetarian":
+      return {
+        title: "Non-Vegetarian Diet Plan",
+        description: "A diet that includes animal products like meat, fish, and poultry.",
+        tips: [
+          "Choose lean cuts of meat",
+          "Include fatty fish like salmon twice a week",
+          "Balance your plate with vegetables and whole grains",
+          "Limit processed meats",
+          "Practice portion control with animal proteins",
+          "Include vegetable proteins like legumes regularly"
+        ],
+        foods: {
+          eat: ["lean meats", "fish", "eggs", "whole grains", "fruits", "vegetables", "nuts and seeds"],
+          limit: ["processed meats", "excessive red meat", "fried foods", "high-fat dairy", "refined carbohydrates"]
+        },
+        icon: React.createElement(UtensilsCrossed, { className: "h-8 w-8 text-orange-500" })
       };
     
     default:

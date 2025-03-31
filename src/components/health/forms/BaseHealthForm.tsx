@@ -28,6 +28,7 @@ export const baseFormSchema = z.object({
   age: z.number().min(18).max(120),
   gender: z.enum(["male", "female", "other"]),
   additionalNotes: z.string().optional(),
+  dietPreference: z.enum(["vegetarian", "non-vegetarian", "vegan"]).default("vegetarian"),
 });
 
 export type BaseFormValues = z.infer<typeof baseFormSchema>;
@@ -37,6 +38,8 @@ interface BaseHealthFormProps {
   onSubmit: (data: ConditionFormData) => void;
   children?: React.ReactNode;
   schema: z.ZodType<any>;
+  title?: string;
+  description?: string;
 }
 
 const BaseHealthForm: React.FC<BaseHealthFormProps> = ({
@@ -44,6 +47,8 @@ const BaseHealthForm: React.FC<BaseHealthFormProps> = ({
   onSubmit,
   children,
   schema,
+  title,
+  description,
 }) => {
   const form = useForm<any>({
     resolver: zodResolver(schema),
@@ -51,6 +56,7 @@ const BaseHealthForm: React.FC<BaseHealthFormProps> = ({
       age: 0,
       gender: "male",
       additionalNotes: "",
+      dietPreference: "vegetarian",
     },
   });
 
@@ -73,7 +79,8 @@ const BaseHealthForm: React.FC<BaseHealthFormProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Personalized {condition} Recommendations</CardTitle>
+        <CardTitle>{title || `Personalized ${condition} Recommendations`}</CardTitle>
+        {description && <p className="text-muted-foreground mt-1">{description}</p>}
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -126,11 +133,35 @@ const BaseHealthForm: React.FC<BaseHealthFormProps> = ({
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="dietPreference"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Diet Preference</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select diet preference" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                        <SelectItem value="non-vegetarian">Non-Vegetarian</SelectItem>
+                        <SelectItem value="vegan">Vegan</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="md:col-span-2">{children}</div>
             </div>
 
             <Button type="submit" className="w-full">
-              Get Personalized Recommendations
+              Get Personalized Meal Plan
             </Button>
           </form>
         </Form>

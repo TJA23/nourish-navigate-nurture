@@ -3,7 +3,8 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HealthRecommendation } from "@/types/health";
-import { Apple, Cherry, Brain } from "lucide-react";
+import { Apple, Cherry, Brain, Leaf, UtensilsCrossed, Salad } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface HealthRecommendationsProps {
   recommendation: HealthRecommendation;
@@ -13,6 +14,16 @@ const HealthRecommendations: React.FC<HealthRecommendationsProps> = ({
   recommendation,
 }) => {
   const { condition, dailyNutritionTargets, dietaryGuidelines, mealPlan } = recommendation;
+
+  // Determine the diet type badge to display
+  const getDietTypeBadge = () => {
+    if (condition === "vegan") {
+      return <Badge className="bg-green-500 hover:bg-green-600">Vegan</Badge>;
+    } else if (condition === "non-vegetarian") {
+      return <Badge className="bg-orange-500 hover:bg-orange-600">Non-Vegetarian</Badge>;
+    }
+    return <Badge className="bg-blue-500 hover:bg-blue-600">Medical Diet</Badge>;
+  };
 
   const renderNutritionFacts = (calories: number, protein: number, carbs: number, fat: number, fiber: number, sugar: number) => (
     <div className="bg-gray-50 p-4 rounded-md">
@@ -81,16 +92,17 @@ const HealthRecommendations: React.FC<HealthRecommendationsProps> = ({
     </div>
   );
 
+  const getMealIcon = (title: string) => {
+    if (title === "Breakfast") return <Apple className="h-5 w-5 text-yellow-600" />;
+    if (title === "Lunch") return <Cherry className="h-5 w-5 text-red-600" />;
+    if (title === "Dinner") return <Brain className="h-5 w-5 text-purple-600" />;
+    return null;
+  };
+
   const renderMeal = (meal: typeof mealPlan.breakfast, title: string) => (
     <div className="border rounded-md p-4 mb-4">
       <div className="flex items-center gap-2 mb-3">
-        {title === "Breakfast" ? (
-          <Apple className="h-5 w-5 text-yellow-600" />
-        ) : title === "Lunch" ? (
-          <Cherry className="h-5 w-5 text-red-600" />
-        ) : (
-          <Brain className="h-5 w-5 text-purple-600" />
-        )}
+        {getMealIcon(title)}
         <h3 className="font-medium">{title}: {meal.name}</h3>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -115,8 +127,14 @@ const HealthRecommendations: React.FC<HealthRecommendationsProps> = ({
 
   return (
     <Card className="mt-6">
-      <CardHeader>
-        <CardTitle>Personalized {condition} Meal Plan</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Personalized {condition} Meal Plan</CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            Customized nutrition plan based on your health profile
+          </p>
+        </div>
+        <div>{getDietTypeBadge()}</div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="plan">
