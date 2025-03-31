@@ -3,9 +3,7 @@ export type HealthCondition =
   | "diabetes" 
   | "kidney disease" 
   | "liver disease" 
-  | "joint issues" 
-  | "pcos" 
-  | "general";
+  | "pcos";
 
 export interface NutritionInfo {
   calories: number;

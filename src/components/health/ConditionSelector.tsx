@@ -17,7 +17,7 @@ const ConditionSelector: React.FC<ConditionSelectorProps> = ({
   onTogglePersonalizedForm,
   showPersonalizedForm
 }) => {
-  const conditions: HealthCondition[] = ["heart disease", "diabetes", "kidney disease", "liver disease", "joint issues", "pcos", "general"];
+  const conditions: HealthCondition[] = ["heart disease", "diabetes", "kidney disease", "liver disease", "pcos"];
 
   return (
     <div className="bg-white rounded-lg shadow-md mb-8 p-6">

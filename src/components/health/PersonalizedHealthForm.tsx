@@ -6,8 +6,6 @@ import DiabetesForm from "./forms/DiabetesForm";
 import KidneyDiseaseForm from "./forms/KidneyDiseaseForm";
 import LiverDiseaseForm from "./forms/LiverDiseaseForm";
 import PCOSForm from "./forms/PCOSForm";
-import JointIssuesForm from "./forms/JointIssuesForm";
-import GeneralHealthForm from "./forms/GeneralHealthForm";
 
 interface PersonalizedHealthFormProps {
   condition: HealthCondition;
@@ -30,10 +28,8 @@ const PersonalizedHealthForm: React.FC<PersonalizedHealthFormProps> = ({
         return <LiverDiseaseForm onSubmit={onSubmit} />;
       case "pcos":
         return <PCOSForm onSubmit={onSubmit} />;
-      case "joint issues":
-        return <JointIssuesForm onSubmit={onSubmit} />;
       default:
-        return <GeneralHealthForm onSubmit={onSubmit} />;
+        return <HeartDiseaseForm onSubmit={onSubmit} />;
     }
   };
 
