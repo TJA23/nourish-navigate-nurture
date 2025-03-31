@@ -49,6 +49,11 @@ const HealthAssistant: React.FC<HealthAssistantProps> = ({
     
     // Simple keyword-based responses
     if (lowerQuestion.includes("diet") || lowerQuestion.includes("food") || lowerQuestion.includes("eat")) {
+      if (condition === "vegan") {
+        return "A vegan diet excludes all animal products. Focus on plant proteins like legumes, tofu, tempeh, and seitan. Ensure adequate B12, iron, calcium, and omega-3 intake through fortified foods or supplements.";
+      } else if (condition === "non-vegetarian") {
+        return "A balanced non-vegetarian diet includes lean meats, fish, eggs, dairy, fruits, vegetables, whole grains, and healthy fats. Aim for variety and moderation.";
+      }
       return `For ${condition}, it's important to follow a balanced diet. Please check our detailed recommendations in the health advice section.`;
     }
     
@@ -62,10 +67,12 @@ const HealthAssistant: React.FC<HealthAssistantProps> = ({
           return "Light to moderate exercise can be beneficial, but intensity should be based on your specific condition. Walking, swimming, and cycling are good options. Consult your nephrologist.";
         case "liver disease":
           return "Gentle exercise can help manage weight, which is important for liver health. Walking, swimming, and yoga are good options. Avoid strenuous activities that might strain your body.";
-        case "joint issues":
-          return "Low-impact exercises like swimming, water aerobics, and cycling are ideal. Focus on range of motion and strengthening exercises. Avoid high-impact activities that stress your joints.";
         case "pcos":
           return "Regular exercise helps manage PCOS symptoms by improving insulin sensitivity and helping with weight management. Aim for a mix of cardio and strength training.";
+        case "vegan":
+          return "Any exercise regimen works well with a vegan diet. Ensure adequate protein intake and consider creatine supplementation if you're strength training extensively.";
+        case "non-vegetarian":
+          return "Your diet provides complete proteins which support muscle recovery and growth. Any type of exercise program can be supported with proper nutrition timing and planning.";
         default:
           return "Regular physical activity is important for overall health. Aim for a mix of cardio, strength training, and flexibility exercises. Always listen to your body.";
       }
@@ -81,10 +88,12 @@ const HealthAssistant: React.FC<HealthAssistantProps> = ({
           return "Early kidney disease often has no symptoms. Later signs include fatigue, difficulty concentrating, poor appetite, trouble sleeping, muscle cramps, and swollen feet/ankles.";
         case "liver disease":
           return "Liver disease symptoms may include yellowing of skin/eyes, abdominal pain/swelling, swelling in legs/ankles, itchy skin, dark urine, pale stool, and chronic fatigue.";
-        case "joint issues":
-          return "Joint problems typically present as pain, stiffness, swelling, decreased range of motion, and sometimes redness or warmth in the affected area.";
         case "pcos":
           return "PCOS symptoms can include irregular periods, excess androgen (resulting in excess facial/body hair, acne), polycystic ovaries, and weight gain.";
+        case "vegan":
+          return "A poorly planned vegan diet might lead to deficiencies in B12, iron, zinc, calcium, vitamin D, and omega-3s. Symptoms can include fatigue, weakness, anemia, and poor immune function.";
+        case "non-vegetarian":
+          return "A typical non-vegetarian diet doesn't have specific symptoms, but excessive consumption of red and processed meats may contribute to increased risk of certain health conditions.";
         default:
           return "Symptoms vary greatly depending on the specific health condition. Could you please specify which condition you're asking about?";
       }

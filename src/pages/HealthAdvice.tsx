@@ -11,7 +11,7 @@ import { getHealthRecommendations } from "@/data/healthRecommendations";
 import { ConditionFormData, HealthCondition, HealthRecommendation } from "@/types/health";
 
 const HealthAdvice = () => {
-  const [selectedCondition, setSelectedCondition] = useState<HealthCondition>("general");
+  const [selectedCondition, setSelectedCondition] = useState<HealthCondition>("heart disease");
   const [showPersonalizedForm, setShowPersonalizedForm] = useState(false);
   const [recommendation, setRecommendation] = useState<HealthRecommendation | null>(null);
 

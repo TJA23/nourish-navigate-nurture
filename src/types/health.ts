@@ -1,9 +1,12 @@
+
 export type HealthCondition = 
   | "heart disease" 
   | "diabetes" 
   | "kidney disease" 
   | "liver disease" 
-  | "pcos";
+  | "pcos"
+  | "vegan"
+  | "non-vegetarian";
 
 export interface NutritionInfo {
   calories: number;
